@@ -17,7 +17,7 @@ import GPUtil as gpu
 from udls.transforms import Compose, RandomApply, Dequantize, RandomCrop
 
 if __name__ == "__main__":
-    print("woot!")
+    print("yea!")
     class args(Config):
         groups = ["small", "large"]
 
