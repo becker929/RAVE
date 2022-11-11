@@ -1,5 +1,6 @@
 import torch
 from torch.utils.data import DataLoader, random_split
+from pytorch_lightning.callbacks import DeviceStatsMonitor
 
 from rave.model import RAVE
 from rave.core import random_phase_mangle, EMAModelCheckPoint
@@ -160,7 +161,7 @@ if __name__ == "__main__":
         logger=pl.loggers.TensorBoardLogger(path.join("runs", args.NAME),
                                             name="rave"),
         gpus=use_gpu,
-        callbacks=[validation_checkpoint, last_checkpoint],
+        callbacks=[validation_checkpoint, last_checkpoint, DeviceStatsMonitor()],
         max_epochs=100000,
         max_steps=args.MAX_STEPS,
         **val_check,
