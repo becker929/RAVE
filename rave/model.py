@@ -735,6 +735,4 @@ class RAVE(pl.LightningModule):
                          np.argmax(var > p).astype(np.float32))
 
         y = torch.cat(audio, 0)[:64].reshape(-1)
-        self.logger.experiment.add_audio("audio_val", y,
-                                         self.saved_step.item(), self.sr)
         self.idx += 1
