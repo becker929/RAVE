@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import DeviceStatsMonitor
+from pytorch_lightning.loggers import CSVLogger
 
 from rave.model import RAVE
 from rave.core import random_phase_mangle, EMAModelCheckPoint
@@ -18,7 +19,6 @@ import GPUtil as gpu
 from udls.transforms import Compose, RandomApply, Dequantize, RandomCrop
 
 if __name__ == "__main__":
-    print("yea!")
     class args(Config):
         groups = ["small", "large"]
 
@@ -157,9 +157,10 @@ if __name__ == "__main__":
         nepoch = args.VAL_EVERY // len(train)
         val_check["check_val_every_n_epoch"] = nepoch
 
+    logger = CSVLogger("logs", name=args.NAME)
+
     trainer = pl.Trainer(
-        logger=pl.loggers.TensorBoardLogger(path.join("runs", args.NAME),
-                                            name="rave"),
+        logger=logger,
         gpus=use_gpu,
         callbacks=[validation_checkpoint, last_checkpoint, DeviceStatsMonitor()],
         max_epochs=100000,
