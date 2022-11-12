@@ -1,4 +1,9 @@
 {
   "editor.formatOnSave": true,
-  "python.formatting.provider": "yapf"
+"python.formatting.provider": "yapf",
+"workbench.colorCustomizations": {
+    "activityBar.background": "#15CB98",
+    "titleBar.activeBackground": "#17E0A8",
+    "titleBar.activeForeground": "#031E16"
+}
 }
