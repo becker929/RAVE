@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import DeviceStatsMonitor
 from pytorch_lightning.loggers import CSVLogger
+from pytorch_lightning.profiler import AdvancedProfiler
 
 from rave.model import RAVE
 from rave.core import random_phase_mangle, EMAModelCheckPoint
@@ -122,7 +123,6 @@ if __name__ == "__main__":
         generator=torch.Generator().manual_seed(42),
     )
 
-
     num_workers = 0 if os.name == "nt" else 8
     train = DataLoader(train, args.BATCH, True, drop_last=True, num_workers=num_workers)
     val = DataLoader(val, args.BATCH, False, num_workers=num_workers)
@@ -158,8 +158,9 @@ if __name__ == "__main__":
         val_check["check_val_every_n_epoch"] = nepoch
 
     logger = CSVLogger("logs", name=args.NAME)
-
+    profiler = AdvancedProfiler(dirpath=".", filename="perf_logs")
     trainer = pl.Trainer(
+        profiler=profiler,
         logger=logger,
         gpus=use_gpu,
         callbacks=[validation_checkpoint, last_checkpoint, DeviceStatsMonitor()],
