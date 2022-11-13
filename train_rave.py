@@ -1,4 +1,5 @@
 import torch
+from torch.profiler import profile, record_function, ProfilerActivity
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import DeviceStatsMonitor
 from pytorch_lightning.loggers import CSVLogger
@@ -18,6 +19,7 @@ import numpy as np
 import GPUtil as gpu
 
 from udls.transforms import Compose, RandomApply, Dequantize, RandomCrop
+
 
 if __name__ == "__main__":
     class args(Config):
@@ -175,4 +177,9 @@ if __name__ == "__main__":
         step = torch.load(run, map_location='cpu')["global_step"]
         trainer.fit_loop.epoch_loop._batches_that_stepped = step
 
-    trainer.fit(model, train, val, ckpt_path=run)
+    with profile(activities=[ProfilerActivity.CUDA, ProfilerActivity.CPU], with_stack=True) as prof:
+        with record_function("model_inference"):
+            trainer.fit(model, train, val, ckpt_path=run)
+    print(prof.key_averages().table(sort_by="gpu_time_total", row_limit=10))
+    prof.export_stacks("/content/profiler_cpu_stacks.txt", "self_cpu_time_total")
+    prof.export_stacks("/content/profiler_gpu_stacks.txt", "self_gpu_time_total")
