@@ -181,5 +181,5 @@ if __name__ == "__main__":
         with record_function("model_inference"):
             trainer.fit(model, train, val, ckpt_path=run)
     print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
-    prof.export_stacks("/content/profiler_cpu_stacks.txt", "self_cpu_time_total")
-    prof.export_stacks("/content/profiler_cuda_stacks.txt", "self_cuda_time_total")
+    prof.export_stacks(args.CPU_STACK_FILE, "self_cpu_time_total")
+    prof.export_stacks(args.CUDA_STACK_FILE, "self_cuda_time_total")
