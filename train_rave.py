@@ -66,8 +66,8 @@ if __name__ == "__main__":
 
         NAME = None
 
-        CPU_TRACE_FILE = None
-        CUDA_TRACE_FILE = None
+        CPU_STACK_FILE = None
+        CUDA_STACK_FILE = None
 
     args.parse_args()
 
