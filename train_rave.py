@@ -171,6 +171,8 @@ if __name__ == "__main__":
     if args.PROFILE:
         profiler = AdvancedProfiler(dirpath=".", filename="perf_logs")
         callbacks.append(DeviceStatsMonitor())
+    else:
+        print("skipping profiler")
 
     trainer = pl.Trainer(
         profiler=profiler,
