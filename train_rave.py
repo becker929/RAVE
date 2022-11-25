@@ -70,6 +70,7 @@ if __name__ == "__main__":
         CUDA_STACK_FILE = None
 
         NUM_WORKERS = 8
+        PROFILE = False
 
     args.parse_args()
 
@@ -165,12 +166,19 @@ if __name__ == "__main__":
         val_check["check_val_every_n_epoch"] = nepoch
 
     logger = CSVLogger("logs", name=args.NAME)
-    profiler = AdvancedProfiler(dirpath=".", filename="perf_logs")
+    profiler = None
+    callbacks = [validation_checkpoint, last_checkpoint]
+    if args.PROFILE:
+        profiler = AdvancedProfiler(dirpath=".", filename="perf_logs")
+        callbacks.append(DeviceStatsMonitor())
+    else:
+        print("skipping profiler")
+
     trainer = pl.Trainer(
         profiler=profiler,
         logger=logger,
         gpus=use_gpu,
-        callbacks=[validation_checkpoint, last_checkpoint, DeviceStatsMonitor()],
+        callbacks=callbacks,
         max_epochs=100000,
         max_steps=args.MAX_STEPS,
         **val_check,
