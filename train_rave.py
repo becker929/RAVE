@@ -69,6 +69,8 @@ if __name__ == "__main__":
         CPU_STACK_FILE = None
         CUDA_STACK_FILE = None
 
+        NUM_WORKERS = 8
+
     args.parse_args()
 
     assert args.NAME is not None
@@ -128,7 +130,7 @@ if __name__ == "__main__":
         generator=torch.Generator().manual_seed(42),
     )
 
-    num_workers = 0 if os.name == "nt" else 8
+    num_workers = 0 if os.name == "nt" else args.NUM_WORKERS
     train = DataLoader(train, args.BATCH, True, drop_last=True, num_workers=num_workers)
     val = DataLoader(val, args.BATCH, False, num_workers=num_workers)
 
