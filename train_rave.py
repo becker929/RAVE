@@ -190,9 +190,12 @@ if __name__ == "__main__":
         step = torch.load(run, map_location='cpu')["global_step"]
         trainer.fit_loop.epoch_loop._batches_that_stepped = step
 
-    with profile(activities=[ProfilerActivity.CUDA, ProfilerActivity.CPU], with_stack=True) as prof:
-        with record_function("model_inference"):
-            trainer.fit(model, train, val, ckpt_path=run)
-    print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
-    prof.export_stacks(args.CPU_STACK_FILE, "self_cpu_time_total")
-    prof.export_stacks(args.CUDA_STACK_FILE, "self_cuda_time_total")
+    if args.PROFILE:
+        with profile(activities=[ProfilerActivity.CUDA, ProfilerActivity.CPU], with_stack=True) as prof:
+            with record_function("model_inference"):
+                trainer.fit(model, train, val, ckpt_path=run)
+        print(prof.key_averages().table(sort_by="cuda_time_total", row_limit=10))
+        prof.export_stacks(args.CPU_STACK_FILE, "self_cpu_time_total")
+        prof.export_stacks(args.CUDA_STACK_FILE, "self_cuda_time_total")
+    else:
+        trainer.fit(model, train, val, ckpt_path=run)
